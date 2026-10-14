@@ -1,0 +1,114 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MZANSI GAME STUDIO</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#10141d;color:white;font-family:Arial,sans-serif}
+header{background:#087f5b;padding:18px;text-align:center}
+header h1{font-size:22px;margin:0}
+header p{margin:7px 0 0;font-size:12px}
+main{padding:15px;max-width:700px;margin:auto}
+.panel{background:#1c2331;border-radius:12px;padding:15px;margin-bottom:14px}
+h2{font-size:17px;margin-top:0}
+input,button{font-size:15px;border-radius:8px;padding:12px;width:100%;margin:5px 0;border:0}
+input{background:#30394b;color:white}
+button{background:#0ca678;color:white;font-weight:bold}
+button.secondary{background:#354258}
+#world{height:260px;background:#b8d9a0;border:3px solid #536b4b;border-radius:8px;position:relative;overflow:hidden}
+#world:before{content:"";position:absolute;background:#d7c49b;width:100%;height:35px;top:110px;transform:rotate(-12deg)}
+#world:after{content:"";position:absolute;background:#d7c49b;width:35px;height:100%;left:48%;top:0}
+.object{position:absolute;z-index:2;left:45%;top:42%;font-size:35px;cursor:pointer;user-select:none}
+#status{color:#9ee6c5;font-size:13px}
+footer{text-align:center;padding:15px;color:#aab4c5;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+<h1>MZANSI GAME STUDIO</h1>
+<p>CREATE YOUR OWN WORLD</p>
+</header>
+<main>
+<div class="panel">
+<h2>My Project</h2>
+<input id="projectName" value="My First Mzansi Game" aria-label="Project name">
+<button onclick="saveProject()">Save Project</button>
+<button class="secondary" onclick="downloadProject()">Export Project</button>
+<p id="status">Ready to create.</p>
+</div><div class="panel">
+<h2>World Editor</h2>
+<div id="world">
+<div class="object" id="player" style="left:43%;top:38%">🧍</div>
+</div>
+<p>Choose an object to add to your world.</p>
+<button onclick="addObject('🏠')">Add House</button>
+<button onclick="addObject('🚗')">Add Car</button>
+<button onclick="addObject('🌳')">Add Tree</button>
+<button onclick="addObject('🧍')">Add Person</button>
+<button class="secondary" onclick="movePlayer()">Move Person</button>
+<button class="secondary" onclick="clearObjects()">Clear Extra Objects</button>
+</div><div class="panel">
+<h2>Play Test</h2>
+<p>This is an early 2D editor prototype.</p>
+<button onclick="playTest()">Run Test</button>
+<p id="playStatus">Your world is waiting.</p>
+</div>
+</main>
+<footer>MZANSI GAME STUDIO • EARLY PROTOTYPE</footer>
+<script>
+let objects=[];
+function message(t){document.getElementById('status').textContent=t}
+function addObject(emoji){
+ const el=document.createElement('div');
+ el.className='object';
+ el.textContent=emoji;
+ el.style.left=(10+Math.random()*75)+'%';
+ el.style.top=(10+Math.random()*70)+'%';
+ document.getElementById('world').appendChild(el);
+ objects.push(el);
+ message(emoji+' added to your world.');
+}
+function movePlayer(){
+ const p=document.getElementById('player');
+ p.style.left=(10+Math.random()*70)+'%';
+ p.style.top=(10+Math.random()*65)+'%';
+ message('Person moved.');
+}
+function clearObjects(){
+ objects.forEach(o=>o.remove());
+ objects=[];
+ message('Extra objects cleared.');
+}
+function projectData(){
+ return {
+  name:document.getElementById('projectName').value,
+  objects:objects.map(o=>({
+   emoji:o.textContent,
+   left:o.style.left,
+   top:o.style.top
+  }))
+ };
+}
+function saveProject(){
+ try{
+  localStorage.setItem('mzansiProject',JSON.stringify(projectData()));
+  message('Project saved on this device.');
+ }catch(e){message('Save unavailable on this device. Use Export Project.')}
+}
+function downloadProject(){
+ const data=JSON.stringify(projectData(),null,2);
+ const blob=new Blob([data],{type:'application/json'});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');
+ a.href=url;a.download='mzansi-project.json';a.click();
+ URL.revokeObjectURL(url);
+ message('Project export requested.');
+}
+function playTest(){
+ document.getElementById('playStatus').textContent=
+ 'Test running! Objects in your world: '+objects.length+'.';
+}
+</script>
+</body>
+                                                                        </html>
